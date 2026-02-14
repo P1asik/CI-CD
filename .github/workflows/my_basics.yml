@@ -20,6 +20,9 @@ jobs:
   Testing:
     runs-on: ubuntu-latest
     steps:
+      - name:
+        uses: actions/checkout@v1
+      
       - name: printing helloword from tst
         run: echo "helloword from testing job"
         
@@ -30,15 +33,16 @@ jobs:
           echo "Application name: ${{ env.APPLICATION_NAME }}"
       - name: list current folder
         run: ls -la
-        
-      - name: cloning git.rep 
+      - name: switching dir
+        run: cd CI-CD
+      - name: main commands
         run: |
-          git clone https://github.com/P1asik/CI-CD.git
           ls -la
-          cd CI-CD
           cat bot_code.ph
-          
-        
+          cd /logs
+          :> log.top
+          top >> log.top
+      
   Deploy:
     runs-on: ubuntu-latest
     steps:
