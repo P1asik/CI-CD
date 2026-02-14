@@ -33,8 +33,6 @@ jobs:
           echo "Application name: ${{ env.APPLICATION_NAME }}"
       - name: list current folder
         run: ls -la
-      - name: switching dir
-        run: cd CI-CD
       - name: main commands
         run: |
           ls -la
