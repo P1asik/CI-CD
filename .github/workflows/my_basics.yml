@@ -4,8 +4,12 @@
 #                  Copyleft (c) HennessyFamq
 #
 # -----------------------------------------------------------
-
 name: CIplasikTest
+env:
+  APPLICATION_NAME    : "MyPlasik"
+  DEPLOY_PACKAGE_NAME : "plasik_deploy-ver-${{ github.sha }}"
+  
+  
 
 on: 
   push:
@@ -18,12 +22,19 @@ jobs:
     steps:
       - name: printing helloword from tst
         run: echo "helloword from testing job"
-             top > logtop.txt
+        
+      - name: execure few commands
+        run: |
+          echo "Hello msg1"
+          echo "hello msg2"
+          echo "Application name: ${{ env.APPLICATION_NAME }}"
 
   Deploy:
     runs-on: ubuntu-latest
     steps:
       - name: printing helloword from dpl
         run: echo "helloword from deploy job"
-             top > logtop.txt
+        
+      - name: Deoployment package
+        run: echo "Deploy package name is ${{ env.DEPLOY_PACKAGE_NAME }}"
     needs: Testing
