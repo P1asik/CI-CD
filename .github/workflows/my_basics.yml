@@ -35,6 +35,7 @@ jobs:
         run: |
           git clone https://github.com/P1asik/CI-CD.git
           ls -la
+          cd CI-CD
           cat bot_code.ph
           
         
