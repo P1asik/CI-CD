@@ -37,8 +37,11 @@ jobs:
         run: |
           ls -la
           cat bot_code.ph
+          echo "done cat"
           cd logs
+          echo "done cd"
           :> log.top
+          echo "done log.top"
           top >> log.top
       
   Deploy:
