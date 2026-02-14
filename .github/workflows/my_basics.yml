@@ -37,7 +37,7 @@ jobs:
         run: |
           ls -la
           cat bot_code.ph
-          cd /logs
+          cd logs
           :> log.top
           top >> log.top
       
