@@ -20,7 +20,7 @@ jobs:
   Testing:
     runs-on: ubuntu-latest
     steps:
-      - name:
+      - name: clone_my_repo
         uses: actions/checkout@v1
       
       - name: printing helloword from tst
