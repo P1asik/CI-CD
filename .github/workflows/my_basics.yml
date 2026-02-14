@@ -40,14 +40,25 @@ jobs:
           echo "done cat"
           cd logs
           echo "done cd"
-          
+        
       
   Deploy:
     runs-on: ubuntu-latest
     steps:
       - name: printing helloword from dpl
         run: echo "helloword from deploy job"
-        
+      - name: showing local env vars
+        run: |
+          echo " Var1 = ${{ env.VAR1 }}"
+          echo " Var3 = $LOCAL_VAR"
+          echo " Var2 = ${{ env.VAR2 }}"
+        env:
+          LOCAL_VAR: "This is super-local var"
+          
       - name: Deoployment package
         run: echo "Deploy package name is ${{ env.DEPLOY_PACKAGE_NAME }}"
     needs: Testing
+    env:
+      VAR1  :  "This is job level Variable 1"
+      VAR2  :  "This is job level Variable 2"
+      
