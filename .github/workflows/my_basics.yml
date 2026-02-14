@@ -1,0 +1,29 @@
+# -----------------------------------------------------------
+#                          Testing ci
+#
+#                  Copyleft (c) HennessyFamq
+#
+# -----------------------------------------------------------
+
+name: CIplasikTest
+
+on: 
+  push:
+    branches:
+    - main
+
+jobs:
+  Testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: printing helloword from tst
+        run: echo "helloword from testing job"
+        run: top > logtop.txt
+
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: printing helloword from dpl
+        run: echo "helloword from deploy job"
+        run: top > logtop.txt
+    needs: Testing
