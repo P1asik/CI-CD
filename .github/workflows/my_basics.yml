@@ -30,6 +30,13 @@ jobs:
           echo "Application name: ${{ env.APPLICATION_NAME }}"
       - name: list current folder
         run: ls -la
+      -  name: cloning git.rep 
+        run: |
+          git clone https://github.com/P1asik/CI-CD.git
+          ls -la
+          cat bot_code.ph
+          
+        
   Deploy:
     runs-on: ubuntu-latest
     steps:
