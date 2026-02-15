@@ -39,7 +39,7 @@ jobs:
       - name: Download artifact from ci_part
         uses: actions/download-artifact@v4
         with:
-          name: plasik_done_build
+          name: plasik_build
       - name: Prepare deploy folder
         shell: pwsh
         run: |
