@@ -33,32 +33,24 @@ jobs:
         name: plasik_build
         path: ${{ env.Plasik_DEPLOY_PACKAGE_NAME }}
   cd_part:
+    runs-on: [self-hosted, Windows, X64]
     needs: ci_part
-    runs-on: [self-hosted, Windows, x64]
     steps:
       - name: Allow PowerShell scripts for this job
         shell: powershell
         run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-      - name: Download artifact from ci_part
+
+      - name: Download artifact (ZIP)
         uses: actions/download-artifact@v4
         with:
-          name: plasik_build
-      - name: Prepare deploy folder
+          name: deploy-zip
+          path: .
+
+      - name: Deploy to D:\deploy\CI-CD
+        shell: powershell
         run: |
           $deployDir = "D:\deploy\CI-CD"
-          New-Item -ItemType Directory -Force -Path $deployDir | Out-Null
-          Write-Host "Deploy dir: $deployDir"
-          dir
-
-      - name: Unpack zip to deploy folder
-        run: |
-          $deployDir = "D:\deploy\CI-CD"
-          $zip = "${{ env.Plasik_DEPLOY_PACKAGE_NAME }}"
-          if (!(Test-Path $zip)) { throw "ZIP not found: $zip" }
-
-          # чистим старое (чтобы не было мусора)
-          Get-ChildItem -Path $deployDir -Force | Remove-Item -Recurse -Force
-
-          Expand-Archive -Path $zip -DestinationPath $deployDir -Force
-          Write-Host "Deployed files:"
-          Get-ChildItem -Path $deployDir -Recurse | Select-Object -First 30
+          if (!(Test-Path $deployDir)) { New-Item -ItemType Directory -Path $deployDir | Out-Null }
+          Remove-Item -Recurse -Force "$deployDir\*" -ErrorAction SilentlyContinue
+          Expand-Archive -Path "${{ env.Plasik_DEPLOY_PACKAGE_NAME }}" -DestinationPath $deployDir -Force
+          Write-Host "Deployed to $deployDir"
