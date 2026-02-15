@@ -17,13 +17,10 @@ on:
     branches: [main]
 
 jobs:
-
   ci_part:
     runs-on: ubuntu-latest
-
     steps:
     - name: Git clone git-repo
       uses: actions/chechout@v4
-
     - name: Create ZIP deployment package
       run: zip -r ${{env.Plasik_DEPLOY_PACKAGE_NAME}} ./ -x *.git*
