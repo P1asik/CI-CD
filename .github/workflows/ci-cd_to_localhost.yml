@@ -26,32 +26,19 @@ jobs:
         with:
           name: deploy-zip
           path: ${{ env.Plasik_DEPLOY_PACKAGE_NAME }}
-
   cd_part:
-    # ВАЖНО: эта джоба пойдёт на твой self-hosted runner
-    runs-on: [self-hosted, Windows, X64]
+    runs-on: self-hosted
     needs: ci_part
-    steps:
-      - name: Allow PowerShell scripts for this job
-        shell: powershell
-        run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
-      - name: Download artifact (ZIP)
+    steps:
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: deploy-zip
-          path: .
 
-      - name: Deploy to D:\deploy\CI-CD
-        shell: powershell
+      - name: Deploy to local folder
+        shell: cmd
         run: |
-          $deployDir = "D:\deploy\CI-CD"
-          if (!(Test-Path $deployDir)) { New-Item -ItemType Directory -Path $deployDir | Out-Null }
-
-          # чистим старый деплой
-          Remove-Item -Recurse -Force "$deployDir\*" -ErrorAction SilentlyContinue
-
-          # распаковываем ZIP в deployDir
-          Expand-Archive -Path "${{ env.Plasik_DEPLOY_PACKAGE_NAME }}" -DestinationPath $deployDir -Force
-
-          Write-Host "Deployed to $deployDir"
+          set DEPLOY_DIR=D:\deploy\CI-CD
+          if not exist %DEPLOY_DIR% mkdir %DEPLOY_DIR%
+          powershell -Command "Expand-Archive -Force *.zip %DEPLOY_DIR%"
