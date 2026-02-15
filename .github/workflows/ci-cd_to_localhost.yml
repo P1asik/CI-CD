@@ -1,18 +1,13 @@
-# -----------------------------------------------------------
-#                          Testing ci/cd
-#
-#                  Copyleft (c) HennessyFamq
-#
-# -----------------------------------------------------------
-name: full_ci-cd_latest 
+name: full_ci-cd_latest
+
 env:
   Plasik_APPLICATION_NAME: "MyPlasik"
   Plasik_ENVIRONMENT: "MyPlasik-env"
-  Plasik_DEPLOY_PACKAGE_NAME: "plasik_app_${{github.sha}}.zip"
+  Plasik_DEPLOY_PACKAGE_NAME: "plasik_app_${{ github.sha }}.zip"
 
-on: 
+on:
   push:
-    branches: [main,feature-new]
+    branches: [main, feature-new]
   pull_request:
     branches: [main]
 
@@ -20,19 +15,20 @@ jobs:
   ci_part:
     runs-on: ubuntu-latest
     steps:
-    - name: Git clone git-repo
-      uses: actions/checkout@v4
-    - name: Create ZIP deployment package
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y zip
-        zip -r ${{env.Plasik_DEPLOY_PACKAGE_NAME}} ./ -x *.git*
-    - name: Upload build artifact (zip)
-      uses: actions/upload-artifact@v4
-      with:
-        name: plasik_build
-        path: ${{ env.Plasik_DEPLOY_PACKAGE_NAME }}
+      - name: Git clone repo
+        uses: actions/checkout@v4
+
+      - name: Create ZIP deployment package
+        run: zip -r "${{ env.Plasik_DEPLOY_PACKAGE_NAME }}" . -x "*.git*"
+
+      - name: Upload artifact (ZIP)
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-zip
+          path: ${{ env.Plasik_DEPLOY_PACKAGE_NAME }}
+
   cd_part:
+    # ВАЖНО: эта джоба пойдёт на твой self-hosted runner
     runs-on: [self-hosted, Windows, X64]
     needs: ci_part
     steps:
@@ -43,7 +39,7 @@ jobs:
       - name: Download artifact (ZIP)
         uses: actions/download-artifact@v4
         with:
-          name: plasik_build
+          name: deploy-zip
           path: .
 
       - name: Deploy to D:\deploy\CI-CD
@@ -51,6 +47,11 @@ jobs:
         run: |
           $deployDir = "D:\deploy\CI-CD"
           if (!(Test-Path $deployDir)) { New-Item -ItemType Directory -Path $deployDir | Out-Null }
+
+          # чистим старый деплой
           Remove-Item -Recurse -Force "$deployDir\*" -ErrorAction SilentlyContinue
+
+          # распаковываем ZIP в deployDir
           Expand-Archive -Path "${{ env.Plasik_DEPLOY_PACKAGE_NAME }}" -DestinationPath $deployDir -Force
+
           Write-Host "Deployed to $deployDir"
