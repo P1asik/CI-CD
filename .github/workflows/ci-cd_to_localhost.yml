@@ -8,7 +8,7 @@ name: full_ci-cd_latest
 env:
   Plasik_APPLICATION_NAME: "MyPlasik"
   Plasik_ENVIRONMENT: "MyPlasik-env"
-  Plasik DEPLOY_PACKAGE_NAME: "plasik_app_${{github.sha}}.zip"
+  Plasik_DEPLOY_PACKAGE_NAME: "plasik_app_${{github.sha}}.zip"
 
 on: 
   push:
@@ -26,4 +26,4 @@ jobs:
       uses: actions/chechout@v4
 
     - name: Create ZIP deployment package
-      run: zip -r ${{env.Plasik DEPLOY_PACKAGE_NAME}} ./ -x *.git*
+      run: zip -r ${{env.Plasik_DEPLOY_PACKAGE_NAME}} ./ -x *.git*
