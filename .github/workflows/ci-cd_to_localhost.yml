@@ -41,7 +41,6 @@ jobs:
         with:
           name: plasik_build
       - name: Prepare deploy folder
-        shell: pwsh
         run: |
           $deployDir = "D:\deploy\CI-CD"
           New-Item -ItemType Directory -Force -Path $deployDir | Out-Null
