@@ -23,4 +23,41 @@ jobs:
     - name: Git clone git-repo
       uses: actions/checkout@v4
     - name: Create ZIP deployment package
-      run: zip -r ${{env.Plasik_DEPLOY_PACKAGE_NAME}} ./ -x *.git*
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y zip
+        zip -r ${{env.Plasik_DEPLOY_PACKAGE_NAME}} ./ -x *.git*
+    - name: Upload build artifact (zip)
+      uses: actions/upload-artifact@v4
+      with:
+        name: plasik_build
+        path: ${{ env.Plasik_DEPLOY_PACKAGE_NAME }}
+  cd_part:
+    needs: ci_part
+    runs-on: [self-hosted, Windows, x64]
+    steps:
+      - name: Download artifact from ci_part
+        uses: actions/download-artifact@v4
+        with:
+          name: plasik_done_build
+      - name: Prepare deploy folder
+        shell: pwsh
+        run: |
+          $deployDir = "D:\deploy\CI-CD"
+          New-Item -ItemType Directory -Force -Path $deployDir | Out-Null
+          Write-Host "Deploy dir: $deployDir"
+          dir
+
+      - name: Unpack zip to deploy folder
+        shell: pwsh
+        run: |
+          $deployDir = "D:\deploy\CI-CD"
+          $zip = "${{ env.Plasik_DEPLOY_PACKAGE_NAME }}"
+          if (!(Test-Path $zip)) { throw "ZIP not found: $zip" }
+
+          # чистим старое (чтобы не было мусора)
+          Get-ChildItem -Path $deployDir -Force | Remove-Item -Recurse -Force
+
+          Expand-Archive -Path $zip -DestinationPath $deployDir -Force
+          Write-Host "Deployed files:"
+          Get-ChildItem -Path $deployDir -Recurse | Select-Object -First 30
