@@ -36,6 +36,9 @@ jobs:
     needs: ci_part
     runs-on: [self-hosted, Windows, x64]
     steps:
+      - name: Allow PowerShell scripts for this job
+        shell: powershell
+        run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
       - name: Download artifact from ci_part
         uses: actions/download-artifact@v4
         with:
