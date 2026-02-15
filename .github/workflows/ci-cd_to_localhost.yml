@@ -43,7 +43,7 @@ jobs:
       - name: Download artifact (ZIP)
         uses: actions/download-artifact@v4
         with:
-          name: deploy-zip
+          name: plasik_build
           path: .
 
       - name: Deploy to D:\deploy\CI-CD
