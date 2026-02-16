@@ -41,4 +41,4 @@ jobs:
         run: |
           set DEPLOY_DIR=D:\deploy\CI-CD
           if not exist %DEPLOY_DIR% mkdir %DEPLOY_DIR%
-          powershell -Command "Expand-Archive -Force *.zip %DEPLOY_DIR%"
+          tar -xf *.zip -C %DEPLOY_DIR%
