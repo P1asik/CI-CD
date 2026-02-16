@@ -1,44 +1,52 @@
 name: full_ci-cd_latest
 
-env:
-  Plasik_APPLICATION_NAME: "MyPlasik"
-  Plasik_ENVIRONMENT: "MyPlasik-env"
-  Plasik_DEPLOY_PACKAGE_NAME: "plasik_app_${{ github.sha }}.zip"
-
 on:
   push:
     branches: [main, feature-new]
   pull_request:
     branches: [main]
 
+env:
+  ZIP_NAME: deploy.zip
+
 jobs:
   ci_part:
     runs-on: ubuntu-latest
     steps:
-      - name: Git clone repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create ZIP deployment package
-        run: zip -r "${{ env.Plasik_DEPLOY_PACKAGE_NAME }}" . -x "*.git*"
+      - name: Create ZIP
+        run: |
+          zip -r "${{ env.ZIP_NAME }}" . -x "*.git*"
 
       - name: Upload artifact (ZIP)
         uses: actions/upload-artifact@v4
         with:
           name: deploy-zip
-          path: ${{ env.Plasik_DEPLOY_PACKAGE_NAME }}
+          path: ${{ env.ZIP_NAME }}
   cd_part:
-    runs-on: self-hosted
     needs: ci_part
+    runs-on: [self-hosted, Windows, X64]
 
     steps:
-      - name: Download artifact
+      - name: Download artifact (ZIP)
         uses: actions/download-artifact@v4
         with:
           name: deploy-zip
+          path: artifact
 
-      - name: Deploy to local folder
-        shell: cmd
+      - name: Show what we downloaded
+        run: dir artifact
+
+      - name: Deploy to D:\deploy\CI-CD
+        shell: powershell
         run: |
-          set DEPLOY_DIR=D:\deploy\CI-CD
-          if not exist %DEPLOY_DIR% mkdir %DEPLOY_DIR%
-          tar -xf *.zip -C %DEPLOY_DIR%
+          $deployDir = "D:\deploy\CI-CD"
+          New-Item -ItemType Directory -Force -Path $deployDir | Out-Null
+
+          $zipPath = (Get-ChildItem -Path "artifact" -Filter "*.zip" | Select-Object -First 1).FullName
+          Write-Host "ZIP found: $zipPath"
+
+          Expand-Archive -Path $zipPath -DestinationPath $deployDir -Force
+          Write-Host "Deployed to $deployDir"
