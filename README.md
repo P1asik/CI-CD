@@ -9,7 +9,7 @@
 #
 #                Latest GitHub Action:<br>
 #        <img src="https://github.com/P1asik/CI-CD/workflows/CIplasikTest/badge.svg?bramch=main"><br>
-#        <img src="https://github.com/P1asik/CI-CD/workflows/ci-cd_to_localhost.yml/badge.svg?bramch=main"><br>
+#        <img src="https://github.com/P1asik/CI-CD/workflows/full_ci_cd_latest/badge.svg?bramch=main"><br>
 #
 #
 #---------------------------------------------------------------------
